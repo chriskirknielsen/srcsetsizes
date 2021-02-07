@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Image srcset / sizes attributes generator</title>
+	<link href="./style.css" rel="stylesheet">
+	<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧰</text></svg>">
+</head>
+<body>
+	<main class="flow">
+		<h1>Image <code>srcset</code> / <code>sizes</code> attributes generator</h1>
+		
+		<p>Can build tools automate this? Yes. But is this generator useless? Also yes. The reason I made this is to have a way to really fine-tune single images if automated tools don't provide you with satisfactory sizes.</p>
+
+		<form class="flow" enctype="multipart/form-data">
+			<fieldset class="flow">
+				<legend class="unflow">Source files and their intrinsic width</legend>
+				<div data-type="src-default">
+					<p>(Default)</p>
+					<p>
+						The file
+						<label>
+							<span class="visually-hidden">Default file path</span>
+							<input name="defpath" id="defpath" type="text" value="" placeholder="e.g.: image.jpg" size="24">
+						</label>
+						is
+						<label>
+							<span class="visually-hidden">Default image width</span>
+							<input name="defwidth" id="defwidth" type="text" pattern="[0-9]*" inputmode="numeric" value="" placeholder="e.g.: 300" size="10">
+						</label>
+						px wide by
+						<label>
+							<span class="visually-hidden">Default image height</span>
+							<input name="defheight" id="defheight" type="text" pattern="[0-9]*" inputmode="numeric" value="" placeholder="e.g.: 168" size="10">
+						</label>
+						px tall
+					</p>
+				</div>
+				<button type="button" data-add="src">Add source</button>
+			</fieldset>
+
+			<fieldset class="flow">
+				<legend class="unflow">Image size at specified breakpoints</legend>
+				<button type="button" data-add="size">Add size</button>
+			</fieldset>
+
+			<fieldset class="flow">
+				<legend class="unflow">Generated <code>&lt;img&gt;</code></legend>
+				<button type="submit">Generate markup</button>
+				<textarea data-output readonly>&lt;img src="image.jpg" alt="Please describe your image."&gt;</textarea>
+			</fieldset>
+
+			<template id="tpl-src" hidden>
+				<div data-type="src">
+					<button type="button" data-remove>Remove</button>
+					<p>
+						The file
+						<label>
+							<span class="visually-hidden">File path</span>
+							<input name="filepath" type="text" value="" placeholder="e.g.: image@1x.jpg" size="24" required>
+						</label>
+						is
+						<label>
+							<span class="visually-hidden">Image width/resolution</span>
+							<input name="filewidth" type="text" pattern="[0-9]+(\.[0-9]+)?" inputmode="numeric" value="" placeholder="e.g.: 300" size="12" required>
+						</label>
+						<label>
+							<span class="visually-hidden">Size description</span>
+							<select name="filedescriptor" required>
+								<option value="w">px wide</option>
+								<option value="x">x resolution</option>
+							</select>
+						</label>
+					</p>
+				</div>
+			</template>
+
+			<template id="tpl-size" hidden>
+				<div data-type="size">
+					<button type="button" data-remove>Remove</button>
+					<p>
+						When the query
+						<label>
+							<span class="visually-hidden">Media query</span>
+							<input name="query" type="text" value="" placeholder="e.g.: (max-width: 768px)" size="24">
+						</label>
+						matches, the image will be shown at
+						<label>
+							<span class="visually-hidden">Image display width</span>
+							<input name="elementwidth" type="text" pattern="[0-9]*" inputmode="numeric" value="" placeholder="e.g.: 300" size="12" required>
+						</label>
+						px wide
+					</p>
+				</div>
+			</template>
+		</form>
+	</main>
+
+	<footer>
+		<p>Made for fun, and with love, by <a href="https://chriskirknielsen.com">chriskirknielsen</a> 🤷‍♂️</p>
+	</footer>
+
+	<script src="script.js"></script>
+</body>
+</html>
