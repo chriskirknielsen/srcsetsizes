@@ -80,7 +80,7 @@ select {
 input:invalid:not(:placeholder-shown) { border-color: var(--c-primary-med, #ff0000); }
 
 select {
-    padding-right: 1em;
+    padding-right: 1.5em;
 
     -moz-appearance: none;
     -webkit-appearance: none;

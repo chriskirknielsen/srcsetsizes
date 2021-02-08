@@ -18,12 +18,18 @@ function generate() {
             var srcPath = group.querySelector('input[name="filepath"]').value;
             var srcWidth = group.querySelector('input[name="filewidth"]').value;
             var srcDescriptor = group.querySelector('select[name="filedescriptor"]').value;
-            srcset.push({ path: srcPath, w: srcWidth, desc: srcDescriptor });
+            
+            if (srcPath && srcWidth && srcDescriptor) {
+                srcset.push({ path: srcPath, w: srcWidth, desc: srcDescriptor });
+            }
         }
         else if (groupType === 'size') {
             var sizeQuery = group.querySelector('input[name="query"]').value;
             var sizeElWidth = group.querySelector('input[name="elementwidth"]').value;
-            sizes.push({ query: sizeQuery, elW: sizeElWidth });
+
+            if (sizeQuery && sizeElWidth) {
+                sizes.push({ query: sizeQuery, elW: sizeElWidth });
+            }
         }
     });
 
@@ -62,31 +68,23 @@ function generate() {
     output.innerHTML = finalOutput;
 }
 
-function addInputs(targetButton, cloneCallback = false, data = false) {
-    // Only process the add buttons
-    if (!targetButton.hasAttribute('data-add')) { return; }
-
-    // Get the type of data to add
-    var type = targetButton.getAttribute('data-add');
-
+function addInputs(type, cloneCallback = false, data = false) {
     // Find the right template
     var template = document.getElementById(`tpl-${type}`);
+    
+    // Only process existing templates
+    if (!template) { return; }
 
     // Clone the template content
     var clone = template.content.cloneNode(true);
 
-    // Find the parent fieldset
-    var fieldset = targetButton.closest('fieldset');
-
-    // And find the fieldset's legend element
-    var legend = fieldset.querySelector('legend');
-
+    // Modify the cloned content before inserting it into the document
     if (typeof cloneCallback === 'function') {
         cloneCallback(clone, data);
     }
     
     // Insert the new content before the button
-    targetButton.before(clone);
+    document.querySelector(`[data-add="${type}"]`).before(clone);
 }
 
 function removeInputs(targetButton) {
@@ -106,16 +104,16 @@ function restoreFromStorage() {
     stored = JSON.parse(stored);
 
     var defaults = document.querySelector('[data-type="src-default"]');
-    var defaultSrc = defaults.querySelector('input[name="defpath"]').value = stored.default.path;
-    var defaultWidth = defaults.querySelector('input[name="defwidth"]').value = stored.default.w;
-    var defaultHeight = defaults.querySelector('input[name="defheight"]').value = stored.default.h;
-
-    var addSrcButton = document.querySelector('[data-add="src"]');
-    var addSizeButton = document.querySelector('[data-add="size"]');
+    defaults.querySelector('input[name="defpath"]').value = stored.default.path;
+    defaults.querySelector('input[name="defwidth"]').value = stored.default.w;
+    defaults.querySelector('input[name="defheight"]').value = stored.default.h;
 
     for (var i = 0; i < stored.src.length; i++) {
         var srcValues = stored.src[i];
-        addInputs(addSrcButton, (clone, data) => {
+        
+        if (!srcValues.path && !srcValues.w && !srcValues.desc) { return; }
+
+        addInputs('src', (clone, data) => {
             clone.querySelector('input[name="filepath"]').value = data.path;
             clone.querySelector('input[name="filewidth"]').value = data.w;
             clone.querySelector('select[name="filedescriptor"]').value = data.desc;
@@ -124,7 +122,10 @@ function restoreFromStorage() {
 
     for (var j = 0; j < stored.size.length; j++) {
         var srcValues = stored.size[j];
-        var newSize = addInputs(addSizeButton, (clone, data) => {
+
+        if (!srcValues.query && !srcValues.elE) { continue; }
+
+        addInputs('size', (clone, data) => {
             clone.querySelector('input[name="query"]').value = data.query;
             clone.querySelector('input[name="elementwidth"]').value = data.elW;
         }, srcValues);
@@ -134,7 +135,10 @@ function restoreFromStorage() {
 }
 
 document.addEventListener('click', function (e) {
-    addInputs(e.target);
+    if (e.target.hasAttribute('data-add')) {
+        addInputs(e.target.getAttribute('data-add'));
+    }
+    
     removeInputs(e.target);
 }, false);
 
